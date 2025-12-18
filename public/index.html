@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人网站</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 顶部导航区 -->
+    <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">吴清迅</div>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="#home" class="nav-link active">首页</a></li>
+                    <li><a href="#about" class="nav-link">关于我</a></li>
+                    <li><a href="#logs" class="nav-link">文档</a></li>
+                    <li><a href="#contact" class="nav-link">联系</a></li>
+                    <li id="authNavItem">
+                        <a href="login.html" class="nav-link" id="authLink">登录</a>
+                    </li>
+                </ul>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主展示区 -->
+    <main>
+        <!-- 欢迎横幅区 -->
+        <section id="home" class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">欢迎来到我的网站</h1>
+            </div>
+        </section>
+
+        <!-- 照片轮播展示区 -->
+        <section id="about" class="gallery-section">
+            <div class="gallery-container">
+                <div class="gallery-main">
+                    <div class="main-image-wrapper">
+                        <img id="mainImage" src="Myphoto/IMG_20250308_154345.jpg" alt="照片展示">
+                        <div class="image-description" id="imageDescription">照片1</div>
+                        <div class="image-time" id="imageTime">2025年3月8日 15:43</div>
+                        <button class="nav-btn prev-btn" id="prevBtn">‹</button>
+                        <button class="nav-btn next-btn" id="nextBtn">›</button>
+                    </div>
+                    <div class="gallery-controls">
+                        <div class="indicators" id="indicators"></div>
+                    </div>
+                </div>
+                <div class="thumbnail-nav">
+                    <div class="thumbnail-item active" data-index="0">
+                        <img src="Myphoto/IMG_20250308_154345.jpg" alt="照片1">
+                    </div>
+                    <div class="thumbnail-item" data-index="1">
+                        <img src="Myphoto/IMG_20250320_190502.jpg" alt="照片2">
+                    </div>
+                    <div class="thumbnail-item" data-index="2">
+                        <img src="Myphoto/IMG_20250525_135121.jpg" alt="照片3">
+                    </div>
+                    <div class="thumbnail-item" data-index="3">
+                        <img src="Myphoto/IMG_20250921_152157.jpg" alt="照片4">
+                    </div>
+                    <div class="thumbnail-item" data-index="4">
+                        <img src="Myphoto/IMG_20250921_161014.jpg" alt="照片5">
+                    </div>
+                    <div class="thumbnail-item" data-index="5">
+                        <img src="Myphoto/IMG_20251026_151306.jpg" alt="照片6">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 文档展示区 -->
+        <section id="logs" class="log-section">
+            <div class="log-container">
+                <div class="log-header">
+                    <h2 class="log-title">文档笔记</h2>
+                    <p class="log-subtitle">记录我的想法与成长</p>
+                </div>
+                <div class="log-body">
+                    <aside class="log-sidebar">
+                        <h3 class="log-sidebar-title">文档列表</h3>
+                        <ul class="log-list" id="logList">
+                            <!-- 由脚本填充 -->
+                        </ul>
+                    </aside>
+                    <article class="log-content">
+                        <div class="log-content-header">
+                            <h3 id="logTitle">请选择一篇文档</h3>
+                        </div>
+                        <div id="logViewer" class="log-viewer">// 这里将显示文档内容</div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- 留言板区域 -->
+        <section id="messages" class="messages-section">
+            <div class="messages-container">
+                <div class="messages-header">
+                    <h2 class="messages-title">留言板</h2>
+                    <p class="messages-subtitle">留下你的想法和祝福</p>
+                </div>
+                <div class="messages-body">
+                    <div class="message-form-wrapper">
+                        <h3>发表留言</h3>
+                        <form id="messageForm" class="message-form">
+                            <textarea id="messageContent" class="message-textarea" placeholder="写下你想说的话..." rows="4" maxlength="1000"></textarea>
+                            <div class="message-form-footer">
+                                <span class="message-count"><span id="charCount">0</span>/1000</span>
+                                <button type="submit" class="message-submit-btn">发表留言</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="messages-list" id="messagesList">
+                        <p style="text-align: center; color: #999; padding: 20px;">加载中...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 底部社交媒体区 -->
+        <section id="contact" class="social-section">
+            <div class="social-container">
+                <h2 class="social-title">保持联系</h2>
+                <div class="social-links">
+                    <a href="https://github.com/quantity262/" target="_blank" class="social-link" title="GitHub">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="https://v.douyin.com/yZaeWr5nJ8U/" target="_blank" class="social-link" title="抖音">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-.04-.5z"/>
+                        </svg>
+                    </a>
+                    <a href="https://b23.tv/5hCE4uq" target="_blank" class="social-link" title="B站">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="social-link wechat-link" id="wechatLink" title="微信">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.597-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 3.336c-1.623-.052-3.623.46-5.19 1.782-1.865 1.548-2.93 4.051-2.015 6.716.109.315.355.59.698.787a.73.73 0 0 1 .24.25c.01.01.01.02 0 .03a10.816 10.816 0 0 1-1.62 1.203.132.132 0 0 0-.08.16c.076.343.26.644.51.89a.953.953 0 0 0 .69.284c.107 0 .203-.02.29-.05l1.95-.59a.96.96 0 0 1 .6-.01c.92.28 1.903.42 2.896.42 4.8 0 8.691-3.288 8.691-7.342 0-2.212-1.17-4.203-3.002-5.55a.59.59 0 0 1-.213-.665c.39-1.48.39-1.48.39-1.48-.19-.07-.4-.1-.59-.14zm-2.34 3.336c.518 0 .938.427.938.953a.945.945 0 0 1-.938.953.945.945 0 0 1-.938-.953c0-.526.42-.953.938-.953zm4.688 0c.518 0 .938.427.938.953a.945.945 0 0 1-.938.953.945.945 0 0 1-.938-.953c0-.526.42-.953.938-.953z"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="copyright">
+                    <p>&copy; 2025 吴清迅. 保留所有权利.</p>
+                    <p><a href="mailto:23301109@bjtu.edu.cn">23301109@bjtu.edu.cn</a></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 微信二维码弹窗 -->
+    <div class="modal-overlay" id="wechatModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">&times;</button>
+            <h3>扫码添加微信</h3>
+            <img src="Myphoto/weixin.png" alt="微信二维码" class="wechat-qrcode">
+        </div>
+    </div>
+
+    <!-- Markdown渲染库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.2/marked.min.js"></script>
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

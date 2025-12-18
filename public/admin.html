@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 个人网站</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            min-height: 100vh;
+            background: #f5f7fa;
+            padding: 2rem;
+        }
+
+        .admin-header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .admin-subtitle {
+            color: var(--text-light);
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-tab {
+            padding: 12px 24px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+
+        .admin-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .admin-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .admin-table th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .admin-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .admin-button-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .admin-button-primary:hover {
+            background: #1e40af;
+        }
+
+        .admin-button-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .admin-button-danger:hover {
+            background: #dc2626;
+        }
+
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 600px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            min-height: 200px;
+            font-family: inherit;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+
+        .message-success {
+            background: #efe;
+            color: #3c3;
+        }
+
+        .message-error {
+            background: #fee;
+            color: #c33;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex !important;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-light);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--text-dark);
+        }
+
+        .password-hash {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 12px 0;
+            color: var(--text-dark);
+            border: 1px solid #e2e8f0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .password-note {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1 class="admin-title">管理后台</h1>
+            <p class="admin-subtitle">欢迎，<span id="adminUsername"></span></p>
+            <div style="margin-top: 16px;">
+                <a href="/index.html" style="color: var(--primary-color); text-decoration: none; margin-right: 16px;">返回首页</a>
+                <a href="#" id="logoutLink" style="color: #ef4444; text-decoration: none;">登出</a>
+            </div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="users">用户管理</button>
+            <button class="admin-tab" data-tab="documents">文档管理</button>
+            <button class="admin-tab" data-tab="messages">留言管理</button>
+        </div>
+
+        <div class="admin-content">
+            <!-- 用户管理 -->
+            <div id="usersTab" class="tab-content">
+                <h2 style="margin-bottom: 16px;">用户列表</h2>
+                <div id="usersMessage"></div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>角色</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 24px; color: #999;">加载中...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 留言管理 -->
+            <div id="messagesTab" class="tab-content" style="display: none;">
+                <h2 style="margin-bottom: 16px;">留言列表</h2>
+                <div id="adminMessagesMessage"></div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>留言内容</th>
+                            <th>状态</th>
+                            <th>发布时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminMessagesTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 24px; color: #999;">加载中...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 文档管理 -->
+            <div id="documentsTab" class="tab-content" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 style="margin: 0;">文档列表</h2>
+                    <button class="admin-button admin-button-primary" onclick="syncDocuments()">同步文件</button>
+                </div>
+                <div id="documentsMessage"></div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>标题</th>
+                            <th>文件名</th>
+                            <th>更新时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="documentsTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 24px; color: #999;">加载中...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        // 检查管理员权限
+        if (!requireAdmin()) {
+            // requireAdmin会处理重定向
+        }
+
+        const user = getUser();
+        document.getElementById('adminUsername').textContent = user.username;
+
+        // 登出
+        document.getElementById('logoutLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            authAPI.logout();
+        });
+
+        // 标签切换
+        document.querySelectorAll('.admin-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                
+                tab.classList.add('active');
+                const tabName = tab.dataset.tab;
+                document.getElementById(`${tabName}Tab`).style.display = 'block';
+                
+                if (tabName === 'users') {
+                    loadUsers();
+                } else if (tabName === 'documents') {
+                    loadDocuments();
+                } else if (tabName === 'messages') {
+                    loadAdminMessages();
+                }
+            });
+        });
+
+        // HTML转义函数（用于JavaScript字符串）
+        function escapeHtmlForJS(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r');
+        }
+
+        // 加载用户列表
+        async function loadUsers() {
+            try {
+                const response = await adminAPI.getUsers();
+                const tbody = document.getElementById('usersTableBody');
+                
+                if (response.users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: #999;">暂无用户</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = response.users.map(user => {
+                    // 使用data属性存储数据，避免在onclick中传递复杂字符串
+                    return `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <select onchange="updateUserRole(${user.id}, this.value)" ${user.id === getUser().id ? 'disabled' : ''}>
+                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>用户</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>管理员</option>
+                            </select>
+                        </td>
+                        <td>${new Date(user.created_at).toLocaleString('zh-CN')}</td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="admin-button admin-button-primary" 
+                                        data-user-id="${user.id}" 
+                                        data-username="${user.username.replace(/"/g, '&quot;')}" 
+                                        data-password="${(user.password || '').replace(/"/g, '&quot;')}"
+                                        onclick="showPasswordInfoFromButton(this)" 
+                                        title="查看密码哈希">查看密码</button>
+                                <button class="admin-button admin-button-primary" 
+                                        data-user-id="${user.id}" 
+                                        data-username="${user.username.replace(/"/g, '&quot;')}"
+                                        onclick="showResetPasswordModalFromButton(this)" 
+                                        title="重置密码">重置密码</button>
+                                ${user.id !== getUser().id ? `<button class="admin-button admin-button-danger" onclick="deleteUser(${user.id})">删除</button>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+            } catch (error) {
+                showMessage('usersMessage', error.message, 'error');
+            }
+        }
+
+        // 更新用户角色
+        async function updateUserRole(userId, role) {
+            try {
+                await adminAPI.updateUserRole(userId, role);
+                showMessage('usersMessage', '角色已更新', 'success');
+                loadUsers();
+            } catch (error) {
+                showMessage('usersMessage', error.message, 'error');
+            }
+        }
+
+        // 删除用户
+        async function deleteUser(userId) {
+            if (!confirm('确定要删除这个用户吗？')) return;
+            
+            try {
+                await adminAPI.deleteUser(userId);
+                showMessage('usersMessage', '用户已删除', 'success');
+                loadUsers();
+            } catch (error) {
+                showMessage('usersMessage', error.message, 'error');
+            }
+        }
+
+        // 加载文档列表
+        async function loadDocuments() {
+            try {
+                const response = await adminAPI.getDocuments();
+                const tbody = document.getElementById('documentsTableBody');
+                
+                if (response.documents.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: #999;">暂无文档</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = response.documents.map(doc => `
+                    <tr>
+                        <td>${doc.id}</td>
+                        <td>${doc.title}</td>
+                        <td>${doc.filename}</td>
+                        <td>${new Date(doc.updated_at).toLocaleString('zh-CN')}</td>
+                        <td>
+                            <button class="admin-button admin-button-danger" onclick="deleteDocument(${doc.id})">删除</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                showMessage('documentsMessage', error.message, 'error');
+            }
+        }
+
+        // 同步文档
+        async function syncDocuments() {
+            try {
+                const response = await adminAPI.syncDocuments();
+                showMessage('documentsMessage', '同步完成', 'success');
+                loadDocuments();
+            } catch (error) {
+                showMessage('documentsMessage', error.message, 'error');
+            }
+        }
+
+        // 删除文档
+        async function deleteDocument(docId) {
+            if (!confirm('确定要删除这个文档吗？')) return;
+            
+            try {
+                await adminAPI.deleteDocument(docId);
+                showMessage('documentsMessage', '文档已删除', 'success');
+                loadDocuments();
+            } catch (error) {
+                showMessage('documentsMessage', error.message, 'error');
+            }
+        }
+
+        // 显示消息
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `message message-${type}`;
+            element.textContent = message;
+            element.style.display = 'block';
+            
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000);
+        }
+
+        // 加载管理员留言列表
+        async function loadAdminMessages() {
+            try {
+                const response = await adminAPI.getMessages();
+                const tbody = document.getElementById('adminMessagesTableBody');
+                
+                if (response.messages.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: #999;">暂无留言</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = response.messages.map(msg => `
+                    <tr>
+                        <td>${msg.id}</td>
+                        <td>${msg.username}</td>
+                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${msg.content}">${msg.content}</td>
+                        <td><span style="padding: 4px 8px; border-radius: 4px; background: ${msg.status === 'active' ? '#d1fae5' : '#fee2e2'}; color: ${msg.status === 'active' ? '#065f46' : '#991b1b'};">${msg.status === 'active' ? '正常' : '已删除'}</span></td>
+                        <td>${new Date(msg.created_at).toLocaleString('zh-CN')}</td>
+                        <td>
+                            ${msg.status === 'active' ? `<button class="admin-button admin-button-danger" onclick="deleteAdminMessage(${msg.id})">删除</button>` : '-'}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                showMessage('adminMessagesMessage', error.message, 'error');
+            }
+        }
+
+        // 删除留言（管理员）
+        async function deleteAdminMessage(messageId) {
+            if (!confirm('确定要删除这条留言吗？')) return;
+            
+            try {
+                await messageAPI.deleteMessage(messageId);
+                showMessage('adminMessagesMessage', '留言已删除', 'success');
+                loadAdminMessages();
+            } catch (error) {
+                showMessage('adminMessagesMessage', error.message, 'error');
+            }
+        }
+
+        // 从按钮获取数据并显示密码信息
+        function showPasswordInfoFromButton(button) {
+            const userId = button.getAttribute('data-user-id');
+            const username = button.getAttribute('data-username');
+            const passwordHash = button.getAttribute('data-password');
+            showPasswordInfo(userId, username, passwordHash);
+        }
+
+        // 显示密码信息
+        function showPasswordInfo(userId, username, passwordHash) {
+            try {
+                const modal = document.getElementById('passwordModal');
+                if (!modal) {
+                    alert('密码模态框未找到');
+                    return;
+                }
+                const titleEl = document.getElementById('passwordModalTitle');
+                const hashEl = document.getElementById('passwordHash');
+                const userIdEl = document.getElementById('passwordUserId');
+                
+                if (titleEl) titleEl.textContent = `用户 ${username} 的密码信息`;
+                if (hashEl) hashEl.textContent = passwordHash || '未设置';
+                if (userIdEl) userIdEl.value = userId;
+                
+                modal.classList.add('show');
+            } catch (error) {
+                console.error('显示密码信息错误:', error);
+                alert('显示密码信息失败: ' + error.message);
+            }
+        }
+
+        // HTML转义函数
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 从按钮获取数据并显示重置密码模态框
+        function showResetPasswordModalFromButton(button) {
+            const userId = button.getAttribute('data-user-id');
+            const username = button.getAttribute('data-username');
+            showResetPasswordModal(userId, username);
+        }
+
+        // 显示重置密码模态框
+        function showResetPasswordModal(userId, username) {
+            try {
+                const modal = document.getElementById('resetPasswordModal');
+                if (!modal) {
+                    alert('重置密码模态框未找到');
+                    return;
+                }
+                const titleEl = document.getElementById('resetPasswordModalTitle');
+                const userIdEl = document.getElementById('resetPasswordUserId');
+                const inputEl = document.getElementById('resetPasswordInput');
+                
+                if (titleEl) titleEl.textContent = `重置用户 ${username} 的密码`;
+                if (userIdEl) userIdEl.value = userId;
+                if (inputEl) inputEl.value = '';
+                
+                modal.classList.add('show');
+            } catch (error) {
+                console.error('显示重置密码模态框错误:', error);
+                alert('显示重置密码模态框失败: ' + error.message);
+            }
+        }
+
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // 重置密码
+        async function resetUserPassword() {
+            const userId = document.getElementById('resetPasswordUserId').value;
+            const newPassword = document.getElementById('resetPasswordInput').value;
+
+            if (!newPassword || newPassword.length < 6) {
+                alert('新密码至少需要6个字符');
+                return;
+            }
+
+            if (!confirm('确定要重置该用户的密码吗？')) return;
+
+            try {
+                await adminAPI.resetPassword(userId, newPassword);
+                alert('密码重置成功！');
+                closeModal('resetPasswordModal');
+                loadUsers();
+            } catch (error) {
+                alert(error.message || '重置密码失败');
+            }
+        }
+
+        // 初始化加载用户列表
+        loadUsers();
+
+        // 点击模态框外部关闭
+        document.getElementById('passwordModal').addEventListener('click', (e) => {
+            if (e.target.id === 'passwordModal') {
+                closeModal('passwordModal');
+            }
+        });
+
+        document.getElementById('resetPasswordModal').addEventListener('click', (e) => {
+            if (e.target.id === 'resetPasswordModal') {
+                closeModal('resetPasswordModal');
+            }
+        });
+    </script>
+
+    <!-- 密码信息模态框 -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title" id="passwordModalTitle">密码信息</h3>
+                <button class="modal-close" onclick="closeModal('passwordModal')">&times;</button>
+            </div>
+            <div>
+                <p style="font-weight: 500; margin-bottom: 8px;">密码哈希值（加密后）：</p>
+                <div class="password-hash" id="passwordHash"></div>
+                <p class="password-note">
+                    注意：密码使用 bcrypt 加密存储，无法直接查看原始密码。<br>
+                    如需重置密码，请使用"重置密码"功能。
+                </p>
+                <input type="hidden" id="passwordUserId">
+            </div>
+        </div>
+    </div>
+
+    <!-- 重置密码模态框 -->
+    <div class="modal-overlay" id="resetPasswordModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title" id="resetPasswordModalTitle">重置密码</h3>
+                <button class="modal-close" onclick="closeModal('resetPasswordModal')">&times;</button>
+            </div>
+            <div>
+                <div class="form-group">
+                    <label class="form-label" for="resetPasswordInput">新密码</label>
+                    <input type="password" id="resetPasswordInput" class="form-input" required minlength="6">
+                    <small style="color: var(--text-light); font-size: 12px; margin-top: 4px; display: block;">密码至少需要6个字符</small>
+                </div>
+                <input type="hidden" id="resetPasswordUserId">
+                <button class="admin-button admin-button-primary" onclick="resetUserPassword()" style="width: 100%;">重置密码</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
