@@ -318,7 +318,10 @@
             <div id="documentsTab" class="tab-content" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <h2 style="margin: 0;">文档列表</h2>
-                    <button class="admin-button admin-button-primary" onclick="syncDocuments()">同步文件</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="admin-button admin-button-primary" onclick="showCreateDocumentModal()">添加文档</button>
+                        <button class="admin-button admin-button-primary" onclick="syncDocuments()">同步文件</button>
+                    </div>
                 </div>
                 <div id="documentsMessage"></div>
                 <table class="admin-table">
@@ -472,17 +475,25 @@
                     return;
                 }
 
-                tbody.innerHTML = response.documents.map(doc => `
+                tbody.innerHTML = response.documents.map(doc => {
+                    // 转义特殊字符，避免JavaScript错误
+                    const safeTitle = (doc.title || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, ' ').replace(/\r/g, '');
+                    const safeFilename = (doc.filename || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    return `
                     <tr>
                         <td>${doc.id}</td>
-                        <td>${doc.title}</td>
-                        <td>${doc.filename}</td>
+                        <td>${doc.title || ''}</td>
+                        <td>${doc.filename || ''}</td>
                         <td>${new Date(doc.updated_at).toLocaleString('zh-CN')}</td>
                         <td>
-                            <button class="admin-button admin-button-danger" onclick="deleteDocument(${doc.id})">删除</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="admin-button admin-button-primary" onclick="showEditDocumentModal(${doc.id}, '${safeTitle}', '${safeFilename}')">编辑</button>
+                                <button class="admin-button admin-button-danger" onclick="deleteDocument(${doc.id})">删除</button>
+                            </div>
                         </td>
                     </tr>
-                `).join('');
+                `;
+                }).join('');
             } catch (error) {
                 showMessage('documentsMessage', error.message, 'error');
             }
@@ -496,6 +507,73 @@
                 loadDocuments();
             } catch (error) {
                 showMessage('documentsMessage', error.message, 'error');
+            }
+        }
+
+        // 显示创建文档模态框
+        function showCreateDocumentModal() {
+            document.getElementById('documentModalTitle').textContent = '添加文档';
+            document.getElementById('documentId').value = '';
+            document.getElementById('documentTitle').value = '';
+            document.getElementById('documentFilename').value = '';
+            document.getElementById('documentFilename').disabled = false;
+            document.getElementById('documentContent').value = '';
+            document.getElementById('documentModal').classList.add('show');
+        }
+
+        // 显示编辑文档模态框
+        async function showEditDocumentModal(docId, title, filename) {
+            try {
+                // 获取文档内容（使用 contentAPI，这是公开API，不需要认证）
+                const response = await contentAPI.getDocument(filename);
+                document.getElementById('documentModalTitle').textContent = '编辑文档';
+                document.getElementById('documentId').value = docId;
+                document.getElementById('documentTitle').value = title;
+                document.getElementById('documentFilename').value = filename;
+                document.getElementById('documentFilename').disabled = true; // 编辑时不允许修改文件名
+                document.getElementById('documentContent').value = response.content || '';
+                document.getElementById('documentModal').classList.add('show');
+            } catch (error) {
+                console.error('加载文档内容失败:', error);
+                // 如果获取失败，仍然显示编辑框，只是内容为空
+                document.getElementById('documentModalTitle').textContent = '编辑文档';
+                document.getElementById('documentId').value = docId;
+                document.getElementById('documentTitle').value = title;
+                document.getElementById('documentFilename').value = filename;
+                document.getElementById('documentFilename').disabled = true;
+                document.getElementById('documentContent').value = '';
+                document.getElementById('documentModal').classList.add('show');
+                alert('加载文档内容失败，将使用空内容: ' + error.message);
+            }
+        }
+
+        // 保存文档
+        async function saveDocument() {
+            const docId = document.getElementById('documentId').value;
+            const title = document.getElementById('documentTitle').value.trim();
+            const filename = document.getElementById('documentFilename').value.trim();
+            const content = document.getElementById('documentContent').value;
+
+            if (!title) {
+                alert('请输入文档标题');
+                return;
+            }
+
+            if (!filename) {
+                alert('请输入文件名');
+                return;
+            }
+
+            // 确保文件名以 .md 结尾
+            const finalFilename = filename.endsWith('.md') ? filename : filename + '.md';
+
+            try {
+                await adminAPI.createDocument(title, finalFilename, content);
+                showMessage('documentsMessage', docId ? '文档已更新' : '文档已创建', 'success');
+                closeModal('documentModal');
+                loadDocuments();
+            } catch (error) {
+                alert('保存文档失败: ' + error.message);
             }
         }
 
@@ -675,6 +753,17 @@
                 closeModal('resetPasswordModal');
             }
         });
+
+        document.getElementById('documentModal').addEventListener('click', (e) => {
+            if (e.target.id === 'documentModal') {
+                closeModal('documentModal');
+            }
+        });
+
+        // 重置文档表单（关闭时）
+        document.getElementById('documentModal').addEventListener('hidden', () => {
+            document.getElementById('documentFilename').disabled = false;
+        });
     </script>
 
     <!-- 密码信息模态框 -->
@@ -692,6 +781,41 @@
                     如需重置密码，请使用"重置密码"功能。
                 </p>
                 <input type="hidden" id="passwordUserId">
+            </div>
+        </div>
+    </div>
+
+    <!-- 文档编辑/创建模态框 -->
+    <div class="modal-overlay" id="documentModal">
+        <div class="modal-box" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="documentModalTitle">添加文档</h3>
+                <button class="modal-close" onclick="closeModal('documentModal')">&times;</button>
+            </div>
+            <div>
+                <input type="hidden" id="documentId">
+                <div class="form-group">
+                    <label class="form-label" for="documentTitle">文档标题 *</label>
+                    <input type="text" id="documentTitle" class="form-input" required placeholder="例如：我的第一篇文档">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="documentFilename">文件名 *</label>
+                    <input type="text" id="documentFilename" class="form-input" required placeholder="例如：我的文档（会自动添加.md后缀）">
+                    <small style="color: var(--text-light); font-size: 12px; margin-top: 4px; display: block;">
+                        文件名将自动添加 .md 后缀，编辑时不允许修改文件名
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="documentContent">文档内容（Markdown格式）</label>
+                    <textarea id="documentContent" class="form-textarea" rows="15" placeholder="支持 Markdown 格式，例如：&#10;&#10;# 标题&#10;&#10;这是正文内容..."></textarea>
+                    <small style="color: var(--text-light); font-size: 12px; margin-top: 4px; display: block;">
+                        支持 Markdown 格式，文档将在网站中实时渲染显示
+                    </small>
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="admin-button admin-button-primary" onclick="saveDocument()" style="flex: 1;">保存文档</button>
+                    <button class="admin-button" onclick="closeModal('documentModal')" style="background: #e2e8f0; color: var(--text-dark);">取消</button>
+                </div>
             </div>
         </div>
     </div>
